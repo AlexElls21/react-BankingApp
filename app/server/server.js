@@ -38,11 +38,13 @@ passport.use(new Auth0Strategy({
 }))
 //THIS IS INVOKED ONE TIME TO SET THINGS UP
 passport.serializeUser(function(user, done) {
+    console.log("serialize", user)
     done(null, user)
 })
 //USER COMES FROM SESSION - THIS IS INVOKED FOR EVERY ENDPOINT
 passport.deserializeUser(function(user, done) {
-    app.get('db').find_session_user(user[0].id).then( user => {
+    console.log("deserialize", user);
+    app.get('db').find_session_user(user.id).then( user => {
         return done(null, user[0]);
     })
 })
@@ -53,6 +55,7 @@ app.get('/auth/callback', passport.authenticate('auth0', {
     failureRedirect: 'http://localhost:3000/#/'
 }))
 app.get('/auth/me', (req, res) => {
+    console.log("req",req.user)
     if(!req.user) {
         return res.status(404).send('User not found')
     } else {
